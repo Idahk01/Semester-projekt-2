@@ -31,14 +31,6 @@ namespace TiltBuddy.Sensors
             Thread.Sleep(100);
         }
 
-        public Tilt()
-        {
-            mpuDevice = I2cDevice.Create(new I2cConnectionSettings(busId, mpuAddress));
-
-            // Væk MPU-9150 fra sleep mode
-            mpuDevice.Write(new byte[] { 0x6B, 0x00 });
-        }
-
         /// <summary>
         /// Beregn “roll” (hældningsvinkel) i grader ud fra accelerator-registre
         /// </summary>

@@ -23,6 +23,8 @@ using TiltBuddy.Sensors;
             kapacitiv.InitSensors();
             tilt.InitSensors();
 
+            var haController = new HomeAssistant(); //Initialiser HomeAssistant
+
             Console.WriteLine("Alle sensorer initialiseret. Starter måleløkke...");
             Thread.Sleep(500);
 

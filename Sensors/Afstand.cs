@@ -10,26 +10,27 @@ using Iot.Device.Vl53L0X;
         private I2cDevice? vlDevice;
         private Vl53L0X? afstandsSensor;
 
-    public void InitSensors()
-    {
-        // Undgå at geninitialisere
-        if (vlDevice != null)
+        public void InitSensors()
         {
-            Console.WriteLine("Afstandssensor allerede initialiseret.");
-            return;
+            // Undgå at geninitialisere
+            if (vlDevice != null)
+            {
+                Console.WriteLine("Afstandssensor allerede initialiseret.");
+                return;
+            }
+
+            Console.WriteLine("Opretter I2C-forbindelse til VL53L0X...");
+            Thread.Sleep(200);
+            var vlSettings = new I2cConnectionSettings(busId, vlAddress);
+            vlDevice = I2cDevice.Create(vlSettings);
+            Thread.Sleep(200);
+
+            afstandsSensor = new Vl53L0X(vlDevice);
+            Console.WriteLine("VL53L0X Initialiseret.");
+            Thread.Sleep(200);
         }
-
-        Console.WriteLine("Opretter I2C-forbindelse til VL53L0X...");
-        Thread.Sleep(200);
-        var vlSettings = new I2cConnectionSettings(busId, vlAddress);
-        vlDevice = I2cDevice.Create(vlSettings);
-        Thread.Sleep(200);
-
-        afstandsSensor = new Vl53L0X(vlDevice);
-        Console.WriteLine("VL53L0X Initialiseret.");
-        Thread.Sleep(200);
-    }
-    public Afstand()
+        
+        public Afstand()
         {
             vlDevice = I2cDevice.Create(new I2cConnectionSettings(busId, vlAddress));
             afstandsSensor = new Vl53L0X(vlDevice);

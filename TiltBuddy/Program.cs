@@ -25,26 +25,80 @@ using TiltBuddy.Sensors;
 
             var haController = new HomeAssistant(); //Initialiser HomeAssistant
 
+            private static bool tiltActive = false;
+            private static double tiltAngleThreshold = 30.0;
+
             Console.WriteLine("Alle sensorer initialiseret. Starter måleløkke...");
             Thread.Sleep(500);
 
             // Hovedløkke for måling og visning
             while (true)
             {
-                try
-                {
-                    bool isTouch = kapacitiv.CheckForTouch();
-                    int? distance = afstand.GetDistance();
-                    double? angle = tilt.TiltAngle();
+                CheckForTilt();
+            }
+        }
+        
+        public enum FunctionId
+        {
+            TurnOnLight,
+            TurnOffLight,
+            Error
+        }
+        private static void CheckForTilt()
+        {
+            double? angle = tilt.TiltAngle();
+            int? distance = afstand.GetDistance();
+            
+            Console.WriteLine($"Distance: {(distance.HasValue ? distance.Value.ToString() : "FEJL/Ugyldig")} mm");
+            Console.WriteLine($"Angle:    {(angle.HasValue ? angle.Value.ToString("F1") : "FEJL")} °");
+            
+            if (angle > tiltAngleThreshold && !tiltActive)
+            {
+                Console.WriteLine("Tilt right (accelerometer) registreret – toggler lampe...");
+                tiltActive = true;
+                var action = CalculateFunction(distance);
 
-                    Console.WriteLine($"Touch={isTouch}, Dist={distance} mm, Tilt={angle:F1}°");
-                    Thread.Sleep(100);
-                }
-                catch (Exception ex)
+                switch (action)
                 {
-                    Console.WriteLine($"Fejl under måling: {ex.Message}");
-                    Thread.Sleep(1000);
+                    case FunctionId.TurnOnLight:
+                        TurnOnLight();
+                        break;
+                    case FunctionId.TurnOffLight:
+                        TurnOffLight();
+                        break;
+                    case FunctionId.Error:
+                        Error();
+                        break;
                 }
             }
+            else if (angle < tiltAngleThreshold - 5.0) // hysterese
+            {
+                tiltActive = false;
+            }
+        }
+
+        private static FunctionId CalculateFunction(int? mm) =>
+            mm switch
+            {
+                < 150 => FunctionId.TurnOnLight,
+                >= 150 and < 300 => FunctionId.TurnOffLight,
+                _ => FunctionId.Error
+            };
+
+        private static void TurnOnLight()
+        {
+            Console.WriteLine("\u001b[32mTurning on light...\u001b[0m");
+            haController.ToggleDefaultEntityAsync();
+        }
+        
+        private static void TurnOffLight()
+        {
+            Console.WriteLine("\u001b[31mTurning off light...\u001b[0m");
+            haController.ToggleDefaultEntityAsync();
+        }
+
+        private static void Error()
+        {
+            Console.WriteLine("\u001b[33mError!\u001b[0m");
         }
     }

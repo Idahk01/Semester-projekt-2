@@ -1,15 +1,20 @@
-﻿using System;
+using System;
 using System.Device.I2c;
 using Iot.Device.Vl53L0X;
 using System.Device.I2c;
 
-    public class Afstand
+    class Afstand
     {
         const int vlAddress = 0x29;
         const int busId = 1;
 
         private I2cDevice? vlDevice;
         private Vl53L0X? afstandsSensor;
+
+        public Afstand()
+        {
+            InitSensors();
+        }
 
         public void InitSensors()
         {
@@ -29,12 +34,6 @@ using System.Device.I2c;
             afstandsSensor = new Vl53L0X(vlDevice);
             Console.WriteLine("VL53L0X Initialiseret.");
             Thread.Sleep(200);
-        }
-        
-        public Afstand()
-        {
-            vlDevice = I2cDevice.Create(new I2cConnectionSettings(busId, vlAddress));
-            afstandsSensor = new Vl53L0X(vlDevice);
         }
 
         /// <summary>

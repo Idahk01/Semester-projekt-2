@@ -1,14 +1,17 @@
-﻿using System;
+using System;
 using System.Device.I2c;
 
-namespace TiltBuddy.Sensors
-{
-    public class Tilt
+    class Tilt
     {
         const int mpuAddress = 0x68;  // MPU-9150 I2C-adresse
         const int busId = 1;     // Typisk I2C-bus på Raspberry Pi
 
         private I2cDevice? mpuDevice;
+
+        public Tilt()
+        {
+            InitSensors();
+        }
 
         public void InitSensors()
         {
@@ -65,4 +68,3 @@ namespace TiltBuddy.Sensors
             }
         }
     }
-}

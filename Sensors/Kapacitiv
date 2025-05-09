@@ -1,0 +1,26 @@
+using System;
+using System.Device.Gpio;
+
+public class Kapacitiv
+{
+    private readonly int _pin = 17;
+    private readonly GpioController _gpio;
+    private bool lastState = false;
+
+    public Kapacitiv()
+    {
+        _gpio = new GpioController();
+        _gpio.OpenPin(_pin, PinMode.Input);
+    }
+
+    /// <summary>
+    /// Returnerer true én gang pr. ny berøring (rising edge)
+    /// </summary>
+    public bool WasTouched()
+    {
+        bool currentState = _gpio.Read(_pin) == PinValue.High;
+        bool touched = currentState && !lastState;
+        lastState = currentState;
+        return touched;
+    }
+}

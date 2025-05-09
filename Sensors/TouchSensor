@@ -1,0 +1,36 @@
+﻿using System;
+using System.Device.I2c;
+using Iot.Device.Mpr121;
+using System.Collections.Generic;
+using System.Threading.Channels;
+
+    public class TouchSensor
+{
+    private readonly int _pin;
+    private readonly GpioController _controller;
+
+    public event Action OnTouch;
+
+    public TouchSensor(int pin)
+    {
+        _pin = pin;
+        _controller = new GpioController();
+        _controller.OpenPin(_pin, PinMode.Input);
+    }
+
+    public void StartMonitoring(int debounceMs = 300, int pollIntervalMs = 50)
+    {
+        Console.WriteLine("TouchSensor monitor starter...");
+
+        while (true)
+        {
+            if (_controller.Read(_pin) == PinValue.High)
+            {
+                OnTouch?.Invoke();
+                Thread.Sleep(debounceMs);
+            }
+
+            Thread.Sleep(pollIntervalMs);
+        }
+    }
+}

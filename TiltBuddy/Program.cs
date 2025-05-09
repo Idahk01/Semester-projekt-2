@@ -20,10 +20,25 @@ using TiltBuddy.Sensors;
 
             // Initialiser sensorer
             afstand.InitSensors();
-            kapacitiv.InitSensors();
             tilt.InitSensors();
 
             var haController = new HomeAssistant(); //Initialiser HomeAssistant
+
+            while (true)
+        {
+        if (kapacitiv.WasTouched())
+        {
+            systemOn = !systemOn;
+            Console.WriteLine(systemOn ? "System TÆNDT" : "System SLUKKET");
+        }
+
+        if (systemOn)
+        {
+            CheckForTilt();
+        }
+
+        Thread.Sleep(1000); // Let CPU'en lidt
+        }
 
             private static bool tiltActive = false;
             private static double tiltAngleThreshold = 30.0;

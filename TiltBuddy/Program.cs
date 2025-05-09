@@ -3,9 +3,10 @@
     {
         private static Afstand afstand;
         private static Tilt tilt;
-        
+        private static Kapacitiv kapacitiv;
         private static HomeAssistant haController;
-        
+
+        private static bool systemOn = false;
         private static bool tiltActive = false;
         private static double tiltAngleThreshold = 30.0;
         private static LEDController? LedController;
@@ -17,6 +18,7 @@
             // Opret sensor-objekter
             afstand = new Afstand();
             tilt = new Tilt();
+            kapacitiv = new Kapacitiv();
             LedController = new LEDController();
 
             haController = new HomeAssistant(); //Initialiser HomeAssistant
@@ -31,7 +33,29 @@
             // Hovedløkke for måling og visning
             while (true)
             {
-                CheckForTilt();
+                // Håndtér touch-knap toggle
+                if(kapacitiv.HasToggled())
+                {
+                    systemOn = !systemOn;
+                    Console.WriteLine(systemOn ? "System TÆNDT" : "system SLUKKET");
+
+                    // Valgfrit: sluk LED'er når system slukkes
+                    if(!systemOn)
+                    {
+                         LedController.ControlLed1(false);
+                         LedController.ControlLed2(false);
+                         LedController.ControlLed3(false);
+                        _currentZone = -1;
+                    }   
+
+                   Thread.Sleep(200); // debounce ekstra 
+                }
+                // Kør sensorer KUN når systemet er tændt
+                if(systemOn)
+                {
+                    CheckForTilt();
+                }
+               
                 Thread.Sleep(200);
             }
         }

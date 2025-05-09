@@ -1,13 +1,14 @@
-﻿using System;
-using System.Threading;
-using TiltBuddy.Sensors;
 
-
-    internal class Program
+    class Program
     {
         private static Afstand afstand;
-        private static Kapacitiv kapacitiv;
         private static Tilt tilt;
+        
+        private static HomeAssistant haController;
+        
+        private static bool tiltActive = false;
+        private static double tiltAngleThreshold = 30.0;
+        private static LEDController? LedController;
 
         static void Main(string[] args)
         {
@@ -15,48 +16,30 @@ using TiltBuddy.Sensors;
 
             // Opret sensor-objekter
             afstand = new Afstand();
-            kapacitiv = new Kapacitiv();
             tilt = new Tilt();
+            LedController = new LEDController();
 
-            // Initialiser sensorer
-            afstand.InitSensors();
-            tilt.InitSensors();
-
-            var haController = new HomeAssistant(); //Initialiser HomeAssistant
-
-            while (true)
-        {
-        if (kapacitiv.WasTouched())
-        {
-            systemOn = !systemOn;
-            Console.WriteLine(systemOn ? "System TÆNDT" : "System SLUKKET");
-        }
-
-        if (systemOn)
-        {
-            CheckForTilt();
-        }
-
-        Thread.Sleep(1000); // Let CPU'en lidt
-        }
-
-            private static bool tiltActive = false;
-            private static double tiltAngleThreshold = 30.0;
+            haController = new HomeAssistant(); //Initialiser HomeAssistant
 
             Console.WriteLine("Alle sensorer initialiseret. Starter måleløkke...");
             Thread.Sleep(500);
+            
+            LedController.ControlLed1(false);
+            LedController.ControlLed2(false);
+            LedController.ControlLed3(false);
 
             // Hovedløkke for måling og visning
             while (true)
             {
                 CheckForTilt();
+                Thread.Sleep(200);
             }
         }
         
         public enum FunctionId
         {
-            TurnOnLight,
-            TurnOffLight,
+            TurnOnOffLight,
+            TurnOnOffTV,
             Error
         }
         private static void CheckForTilt()
@@ -66,6 +49,8 @@ using TiltBuddy.Sensors;
             
             Console.WriteLine($"Distance: {(distance.HasValue ? distance.Value.ToString() : "FEJL/Ugyldig")} mm");
             Console.WriteLine($"Angle:    {(angle.HasValue ? angle.Value.ToString("F1") : "FEJL")} °");
+
+            LEDS(distance);
             
             if (angle > tiltAngleThreshold && !tiltActive)
             {
@@ -75,11 +60,11 @@ using TiltBuddy.Sensors;
 
                 switch (action)
                 {
-                    case FunctionId.TurnOnLight:
-                        TurnOnLight();
+                    case FunctionId.TurnOnOffLight:
+                        TurnOnOffLight();
                         break;
-                    case FunctionId.TurnOffLight:
-                        TurnOffLight();
+                    case FunctionId.TurnOnOffTV:
+                        TurnOnOffTV();
                         break;
                     case FunctionId.Error:
                         Error();
@@ -92,28 +77,48 @@ using TiltBuddy.Sensors;
             }
         }
 
-        private static FunctionId CalculateFunction(int? mm) =>
-            mm switch
+        private static FunctionId CalculateFunction(int? mm) => 
+            mm switch 
             {
-                < 150 => FunctionId.TurnOnLight,
-                >= 150 and < 300 => FunctionId.TurnOffLight,
+                < 150 => FunctionId.TurnOnOffTV,
+                >= 150 and < 300 => FunctionId.TurnOnOffLight,
                 _ => FunctionId.Error
             };
 
-        private static void TurnOnLight()
+        private static void TurnOnOffLight()
         {
-            Console.WriteLine("\u001b[32mTurning on light...\u001b[0m");
-            haController.ToggleDefaultEntityAsync();
+            Console.WriteLine("\u001b[32mTurning on/off light...\u001b[0m");
+            //haController.ToggleLamp();
         }
         
-        private static void TurnOffLight()
+        private static void TurnOnOffTV()
         {
-            Console.WriteLine("\u001b[31mTurning off light...\u001b[0m");
-            haController.ToggleDefaultEntityAsync();
+            Console.WriteLine("\u001b[31mTurning on/off TV...\u001b[0m");
+            haController.ToggleTV();
         }
 
         private static void Error()
         {
             Console.WriteLine("\u001b[33mError!\u001b[0m");
+        }
+
+        private static int _currentZone = -1;
+
+        private static void LEDS(int? distance)
+        {
+            if (!distance.HasValue)
+                return;
+
+            int newZone = distance <= 150 ? 0 :
+                distance <= 300 ? 1 : 2;
+
+            if (newZone == _currentZone)
+                return;
+
+            _currentZone = newZone;
+
+            LedController.ControlLed1(newZone == 0);
+            LedController.ControlLed2(newZone == 1);
+            LedController.ControlLed3(newZone == 2);
         }
     }

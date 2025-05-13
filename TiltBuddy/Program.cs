@@ -4,6 +4,8 @@
         private static Afstand afstand;
         private static Tilt tilt;
         private static Kapacitiv kapacitiv;
+        private static StatusLedController? StatusLed;
+        
         private static HomeAssistant haController;
 
         private static bool systemOn = false;
@@ -20,6 +22,9 @@
             tilt = new Tilt();
             kapacitiv = new Kapacitiv();
             LedController = new LEDController();
+            StatusLed = new StatusLedController(); // GPIO18 som default
+            StatusLed.TurnOff(); // start slukket
+
 
             haController = new HomeAssistant(); //Initialiser HomeAssistant
 
@@ -42,11 +47,16 @@
                     // Valgfrit: sluk LED'er når system slukkes
                     if(!systemOn)
                     {
+                        StatusLed?.TurnOff();
                          LedController.ControlLed1(false);
                          LedController.ControlLed2(false);
                          LedController.ControlLed3(false);
                         _currentZone = -1;
-                    }   
+                    }
+                    else
+                    {
+                        StatusLed?.TurnOn();
+                    }
 
                    Thread.Sleep(200); // debounce ekstra 
                 }

@@ -23,7 +23,7 @@
             kapacitiv = new Kapacitiv();
             LedController = new LEDController();
             StatusLed = new StatusLedController(); // GPIO18 som default
-            StatusLed.TurnOff(); // start slukket
+            statusLed.SetBrightness(0.2); // LED starter med svag glød
 
 
             haController = new HomeAssistant(); //Initialiser HomeAssistant
@@ -47,7 +47,7 @@
                     // Valgfrit: sluk LED'er når system slukkes
                     if(!systemOn)
                     {
-                        StatusLed?.TurnOff();
+                        statusLed.SetBrightness(0.2); // svagt lys når system er slukket
                          LedController.ControlLed1(false);
                          LedController.ControlLed2(false);
                          LedController.ControlLed3(false);
@@ -55,7 +55,8 @@
                     }
                     else
                     {
-                        StatusLed?.TurnOn();
+                        statusLed.SetBrightness(1.0); // kraftigt lys når system tændes
+
                     }
 
                    Thread.Sleep(200); // debounce ekstra 

@@ -1,11 +1,11 @@
 using System.Device.Pwm;
 using System.Device.Pwm.Drivers;
 
-public class StatusLED
+public class StatusLedController
 {
     private readonly PwmChannel _pwm;
 
-    public StatusLED(int gpioPin = 18, int frequency = 1000)
+    public StatusLedController(int gpioPin = 18, int frequency = 1000)
     {
         _pwm = new SoftwarePwmChannel(gpioPin, frequency, dutyCycle: 0.0, usePrecisionTimer: true);
         _pwm.Start();
@@ -25,4 +25,3 @@ public class StatusLED
         _pwm?.Dispose();
     }
 }
-

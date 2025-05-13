@@ -41,12 +41,11 @@ public class LEDController : IDisposable
             // Initialiser PWM for status LED
             // SoftwarePwmChannel tager sig af pin-opsætningen.
             _statusLedPwmChannel = new SoftwarePwmChannel(
-                pin: StatusLedPin,
+                pinNumber: StatusLedPin,
                 frequency: StatusLedFrequency,
                 dutyCycle: 0.0, // Start slukket
                 usePrecisionTimer: true);
             _statusLedPwmChannel.Start();
-            Console.WriteLine($"Status LED (PWM) initialiseret på GPIO pin {StatusLedPin}. LED er slukket.");
 
             Console.WriteLine("LedController initialiseret. Alle LED'er er slukket.");
         }

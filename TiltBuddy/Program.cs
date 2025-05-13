@@ -68,6 +68,10 @@
                
                 Thread.Sleep(200);
             }
+            AppDomain.CurrentDomain.ProcessExit += (s,e) =>
+            {
+                StatusLed?.Dispose();
+            };
         }
         
         public enum FunctionId

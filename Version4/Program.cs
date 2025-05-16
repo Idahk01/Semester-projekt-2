@@ -44,7 +44,7 @@
                     // Valgfrit: sluk LED'er når system slukkes
                     if(!systemOn)
                     {
-                        LedController?.TurnOffStatusLed();
+                        LedController?.SetSystemInactive();//StatusLed lyser med 20%, når systemet er inaktivt
                          LedController.ControlLed1(false);
                          LedController.ControlLed2(false);
                          LedController.ControlLed3(false);

@@ -46,6 +46,7 @@ public class LEDController : IDisposable
                 dutyCycle: 0.0, // Start slukket
                 usePrecisionTimer: true);
             _statusLedPwmChannel.Start();
+            SetStatusLedBrightness(0.2);// StatusLed lyser svagt med 20% som standard
 
             Console.WriteLine("LedController initialiseret. Alle LED'er er slukket.");
         }
@@ -182,6 +183,12 @@ public class LEDController : IDisposable
     /// <summary>
     /// Slukker Status LED.
     /// </summary>
+    public void SetSystemInactive()
+    {
+        SetStatusLedBrightness(0.2);
+        Console.WriteLine($"Status LED (GPIO {StatusLedPin}) sat til 20% (inaktiv tilstand).");
+    }
+
     public void TurnOffStatusLed()
     {
         SetStatusLedBrightness(0.0);

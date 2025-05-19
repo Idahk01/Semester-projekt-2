@@ -176,7 +176,7 @@ public class LEDController : IDisposable
     /// </summary>
     public void TurnOnStatusLed()
     {
-        SetStatusLedBrightness(1.0);
+        SetStatusLedBrightness(0.8);
         Console.WriteLine($"Status LED (GPIO {StatusLedPin}) tændt.");
     }
 

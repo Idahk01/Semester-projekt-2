@@ -35,18 +35,18 @@ public class TændSlukFunktion
         switch (funktion)
         {
             case FunktionId.TændSlukLampe:
-                Console.WriteLine("🔆 Toggler lampe...");
+                Console.WriteLine("Toggler lampe...");
                 // Antag at du har en ToggleLamp() i HomeAssistant
                 _haController.ToggleLamp().GetAwaiter().GetResult();
                 break;
 
             case FunktionId.TændSlukTV:
-                Console.WriteLine("📺 Toggler TV...");
+                Console.WriteLine("Toggler TV...");
                 _haController.ToggleTV().GetAwaiter().GetResult();
                 break;
 
             default:
-                Console.WriteLine("⚠️ Fejl: Ingen gyldig funktion valgt.");
+                Console.WriteLine("Fejl: Ingen gyldig funktion valgt.");
                 break;
         }
     }

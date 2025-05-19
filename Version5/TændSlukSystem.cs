@@ -10,25 +10,25 @@ public class TændSlukSystem
     private readonly HomeAssistant _haController;
     private readonly TændSlukFunktion _funktionHandler;
 
-    private bool _systemOn = false;
-    private bool _tiltActive = false;
-    private int _currentZone = -1;
+    private bool _systemOn    = false;
+    private bool _tiltActive  = false;
+    private int  _currentZone = -1;
     private const double TiltVinkelGrænse = 30.0;
 
-    public TændSlukSystem()
+    /// <summary>
+    /// baseUrl fx "http://172.20.10.6:8123", bearerToken din long-lived token
+    /// </summary>
+    public TændSlukSystem(string baseUrl, string bearerToken)
     {
-        Console.WriteLine("Initialiserer sensorer...");
-        _afstand       = new Afstand();
-        _tilt          = new Tilt();
-        _kapacitiv     = new Kapacitiv();
-        _ledController = new LEDController();
-        _haController  = new HomeAssistant();
+        Console.WriteLine("Initialiserer sensorer og HomeAssistant…");
+        _afstand        = new Afstand();
+        _tilt           = new Tilt();
+        _kapacitiv      = new Kapacitiv();
+        _ledController  = new LEDController();
+        _haController   = new HomeAssistant(baseUrl, bearerToken);
         _funktionHandler = new TændSlukFunktion(_haController);
 
-        Console.WriteLine("Alle sensorer initialiseret. Starter måleløkke...");
-        Thread.Sleep(500);
-
-        // Sluk alle LED’er ved start
+        // Sluk alle zoner ved start
         _ledController.ControlLed1(false);
         _ledController.ControlLed2(false);
         _ledController.ControlLed3(false);
@@ -38,14 +38,13 @@ public class TændSlukSystem
     {
         while (true)
         {
-            // Touch-button toggle
+            // Toggle system vha. touch
             if (_kapacitiv.HasToggled())
             {
                 ToggleSystem();
-                Thread.Sleep(200); // debounce
+                Thread.Sleep(200);
             }
 
-            // Sensor-kørsel kun når systemet er tændt
             if (_systemOn)
                 CheckForTilt();
 
@@ -56,11 +55,10 @@ public class TændSlukSystem
     private void ToggleSystem()
     {
         _systemOn = !_systemOn;
-        Console.WriteLine(_systemOn ? "System TÆNDT" : "System SLUKKET");
+        Console.WriteLine(_systemOn ? "SYSTEM TÆNDT" : "SYSTEM SLUKKET");
 
         if (!_systemOn)
         {
-            // Inaktiv: status-LED på 20% og alle zone-LED slukket
             _ledController.SetSystemInactive();
             _ledController.ControlLed1(false);
             _ledController.ControlLed2(false);
@@ -75,22 +73,20 @@ public class TændSlukSystem
 
     private void CheckForTilt()
     {
-        double? vinkel   = _tilt.TiltAngle();
-        int? afstandMm   = _afstand.GetDistance();
+        var vinkel   = _tilt.TiltAngle();
+        var afstand  = _afstand.GetDistance();
 
-        Console.WriteLine($"Distance: {(afstandMm.HasValue ? afstandMm.Value.ToString() : "FEJL")} mm");
-        Console.WriteLine($"Vinkel:   {(vinkel   .HasValue ? vinkel   .Value.ToString("F1") : "FEJL")} °");
+        Console.WriteLine($"Distance: {(afstand.HasValue ? afstand.Value + " mm" : "FEJL")}");
+        Console.WriteLine($"Vinkel:   {(vinkel.HasValue  ? vinkel.Value.ToString("F1") + " °" : "FEJL")}");
 
-        UpdateZoneLeds(afstandMm);
+        UpdateZoneLeds(afstand);
 
         if (vinkel > TiltVinkelGrænse && !_tiltActive)
         {
-            Console.WriteLine("Tilt registreret – udfører funktion…");
             _tiltActive = true;
-
-            if (afstandMm.HasValue)
+            if (afstand.HasValue)
             {
-                var funktion = _funktionHandler.BeregnFunktion(afstandMm.Value);
+                var funktion = _funktionHandler.BeregnFunktion(afstand.Value);
                 _funktionHandler.UdførFunktion(funktion);
             }
         }
@@ -100,13 +96,13 @@ public class TændSlukSystem
         }
     }
 
-    private void UpdateZoneLeds(int? afstandMm)
+    private void UpdateZoneLeds(int? afstand)
     {
-        if (!afstandMm.HasValue)
-            return;
+        if (!afstand.HasValue) return;
 
-        int nyZone = afstandMm <= 150 ? 0 :
-                     afstandMm <= 300 ? 1 : 2;
+        int nyZone = afstand <= 150 ? 0
+                   : afstand <= 300 ? 1
+                   : 2;
 
         if (nyZone == _currentZone) return;
         _currentZone = nyZone;

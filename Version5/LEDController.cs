@@ -185,8 +185,8 @@ public class LEDController : IDisposable
     /// </summary>
     public void SetSystemInactive()
     {
-        SetStatusLedBrightness(0.2);
-        Console.WriteLine($"Status LED (GPIO {StatusLedPin}) sat til 20% (inaktiv tilstand).");
+        SetStatusLedBrightness(0.05);
+        Console.WriteLine($"Status LED (GPIO {StatusLedPin}) sat til 5% (inaktiv tilstand).");
     }
 
     public void TurnOffStatusLed()

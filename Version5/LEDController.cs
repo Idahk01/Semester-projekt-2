@@ -1,17 +1,15 @@
 using System;
-using System.Device.Gpio; // NuGet: System.Device.Gpio
-using System.Device.Pwm; // Nødvendig for PWM
-using System.Device.Pwm.Drivers; // Nødvendig for SoftwarePwmChannel
+using System.Device.Gpio;
+using System.Device.Pwm;
+using System.Device.Pwm.Drivers;
 using System.Threading;
 
 public class LEDController : IDisposable
 {
     private GpioController _gpioController;
-    private PwmChannel _statusLedPwmChannel; // Tilføjet for status LED
+    private PwmChannel _statusLedPwmChannel;
     private bool _disposed = false;
 
-    // Definer GPIO portnumrene for hver LED
-    // VIGTIGT: Erstat disse med de faktiske GPIO BCM numre, du bruger!
     private const int Led1Pin = 17; // GPIO17 (BCM-nummerering)
     private const int Led2Pin = 27; // GPIO27
     private const int Led3Pin = 22; // GPIO22
@@ -23,10 +21,9 @@ public class LEDController : IDisposable
     private bool _isLed3On = false;
     // Vi behøver ikke en separat boolean for status LED's on/off, da lysstyrken (0.0 til 1.0) definerer dette.
 
-    /// <summary>
-    /// Initialiserer en ny instans af LedController klassen.
-    /// Åbner GPIO-porte for standard LED'er og initialiserer PWM for status LED.
-    /// </summary>
+    // Initialiserer en ny instans af LedController klassen.
+    // Åbner GPIO-porte for standard LED'er og initialiserer PWM for status LED.
+    
     public LEDController()
     {
         try

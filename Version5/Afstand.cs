@@ -1,5 +1,4 @@
 using System;
-using System.Device.I2c;
 using Iot.Device.Vl53L0X;
 using System.Device.I2c;
 

@@ -34,9 +34,7 @@ using System.Device.I2c;
             Thread.Sleep(100);
         }
 
-        /// <summary>
-        /// Beregn “roll” (hældningsvinkel) i grader ud fra accelerator-registre
-        /// </summary>
+        // Beregn “roll” (hældningsvinkel) i grader ud fra accelerator-registre
         public double? TiltAngle()
         {
             if (mpuDevice == null)

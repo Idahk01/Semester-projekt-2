@@ -9,7 +9,7 @@ public class HomeAssistant
 {
     private readonly HttpClient _httpClient;
     private const string LampeId = "switch.innr_sp_220";
-    private const string TvId    = "switch.salon_tv";
+    private const string TvId    = "tv_plug_semester_projekt";
 
     public HomeAssistant(string baseUrl, string bearerToken)
     {

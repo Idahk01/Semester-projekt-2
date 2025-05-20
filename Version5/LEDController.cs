@@ -142,23 +142,7 @@ public class LEDController : IDisposable
     {
         ControlLed3(!_isLed3On);
     }
-
-    /// <summary>
-    /// Returnerer den aktuelle kendte tilstand for LED 1.
-    /// </summary>
-    public bool IsLed1On => _isLed1On;
-
-    /// <summary>
-    /// Returnerer den aktuelle kendte tilstand for LED 2.
-    /// </summary>
-    public bool IsLed2On => _isLed2On;
-
-    /// <summary>
-    /// Returnerer den aktuelle kendte tilstand for LED 3.
-    /// </summary>
-    public bool IsLed3On => _isLed3On;
-
-    // Funktioner til Status LED (PWM)
+    
 
     /// <summary>
     /// Sætter lysstyrken på Status LED.
@@ -170,19 +154,15 @@ public class LEDController : IDisposable
         _statusLedPwmChannel.DutyCycle = Math.Clamp(level, 0.0, 1.0);
         Console.WriteLine($"Status LED (GPIO {StatusLedPin}) lysstyrke sat til {level * 100:F0}%.");
     }
-
-    /// <summary>
-    /// Tænder Status LED ved fuld lysstyrke.
-    /// </summary>
+    
+    // Tænder Status LED ved fuld lysstyrke.
     public void TurnOnStatusLed()
     {
         SetStatusLedBrightness(0.8);
         Console.WriteLine($"Status LED (GPIO {StatusLedPin}) tændt.");
     }
-
-    /// <summary>
-    /// Slukker Status LED.
-    /// </summary>
+    
+    // Slukker Status LED.
     public void SetSystemInactive()
     {
         SetStatusLedBrightness(0.05);
@@ -194,62 +174,11 @@ public class LEDController : IDisposable
         SetStatusLedBrightness(0.0);
         Console.WriteLine($"Status LED (GPIO {StatusLedPin}) slukket.");
     }
-
-    /// <summary>
-    /// Returnerer den aktuelle lysstyrke for Status LED.
-    /// </summary>
+    
+    // Returnerer den aktuelle lysstyrke for Status LED.
     public double GetStatusLedBrightness()
     {
         return _statusLedPwmChannel?.DutyCycle ?? 0.0;
     }
-
-
-    /// <summary>
-    /// Frigør ressourcer brugt af GpioController og PwmChannel.
-    /// Lukker åbne pins og stopper PWM.
-    /// </summary>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed)
-            return;
-
-        if (disposing)
-        {
-            // Frigør administrerede ressourcer
-            if (_gpioController != null)
-            {
-                Console.WriteLine("Lukker standard GPIO pins...");
-                if (_gpioController.IsPinOpen(Led1Pin)) _gpioController.ClosePin(Led1Pin);
-                if (_gpioController.IsPinOpen(Led2Pin)) _gpioController.ClosePin(Led2Pin);
-                if (_gpioController.IsPinOpen(Led3Pin)) _gpioController.ClosePin(Led3Pin);
-
-                _gpioController.Dispose();
-                _gpioController = null;
-                Console.WriteLine("Standard GPIO pins lukket og GpioController Disposed.");
-            }
-
-            if (_statusLedPwmChannel != null)
-            {
-                Console.WriteLine("Stopper og lukker Status LED PWM channel...");
-                _statusLedPwmChannel.Stop();
-                _statusLedPwmChannel.Dispose();
-                _statusLedPwmChannel = null;
-                Console.WriteLine("Status LED PWM Disposed.");
-            }
-        }
-
-        _disposed = true;
-    }
-
-    // Destructor (Finalizer)
-    // ~LEDController()
-    // {
-    //     Dispose(false);
-    // }
-}
+    
+    

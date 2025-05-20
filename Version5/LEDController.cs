@@ -144,10 +144,8 @@ public class LEDController : IDisposable
     }
     
 
-    /// <summary>
-    /// Sætter lysstyrken på Status LED.
-    /// </summary>
-    /// <param name="level">Lysstyrkeniveau mellem 0.0 (slukket) og 1.0 (fuld lysstyrke).</param>
+    // Sætter lysstyrken på Status LED.
+    // Lysstyrkeniveau mellem 0.0 (slukket) og 1.0 (fuld lysstyrke)
     public void SetStatusLedBrightness(double level)
     {
         if (_statusLedPwmChannel == null) return; // PWM channel ikke initialiseret
@@ -174,11 +172,6 @@ public class LEDController : IDisposable
         SetStatusLedBrightness(0.0);
         Console.WriteLine($"Status LED (GPIO {StatusLedPin}) slukket.");
     }
-    
-    // Returnerer den aktuelle lysstyrke for Status LED.
-    public double GetStatusLedBrightness()
-    {
-        return _statusLedPwmChannel?.DutyCycle ?? 0.0;
-    }
+}
     
     

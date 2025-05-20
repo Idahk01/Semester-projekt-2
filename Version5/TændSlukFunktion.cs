@@ -30,7 +30,7 @@ public class TændSlukFunktion
     /// <summary>
     /// Udfør den valgte funktion (blokkerer indtil HTTP-kald er færdigt).
     /// </summary>
-    public void UdførFunktion(FunktionId funktion)
+    public void Execute(FunktionId funktion)
     {
         switch (funktion)
         {

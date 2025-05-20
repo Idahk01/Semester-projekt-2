@@ -17,9 +17,7 @@ public class TændSlukFunktion
         _haController = haController;
     }
 
-    /// <summary>
-    /// Beregn hvilken funktion, der skal udføres baseret på afstand i mm.
-    /// </summary>
+    // Beregn hvilken funktion, der skal udføres baseret på afstand i mm.
     public FunktionId CalculateFunction(int distance)
     {
         if (distance < 150) return FunktionId.TændSlukTV;
@@ -27,9 +25,7 @@ public class TændSlukFunktion
         return FunktionId.Fejl;
     }
 
-    /// <summary>
-    /// Udfør den valgte funktion (blokkerer indtil HTTP-kald er færdigt).
-    /// </summary>
+    // Udfør den valgte funktion (blokkerer indtil HTTP-kald er færdigt).
     public void Execute(FunktionId funktion)
     {
         switch (funktion)

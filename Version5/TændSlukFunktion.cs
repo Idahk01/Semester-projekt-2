@@ -20,10 +20,10 @@ public class TændSlukFunktion
     /// <summary>
     /// Beregn hvilken funktion, der skal udføres baseret på afstand i mm.
     /// </summary>
-    public FunktionId BeregnFunktion(int afstandMm)
+    public FunktionId CalculateFunction(int distance)
     {
-        if (afstandMm < 150) return FunktionId.TændSlukTV;
-        if (afstandMm < 300) return FunktionId.TændSlukLampe;
+        if (distance < 150) return FunktionId.TændSlukTV;
+        if (distance < 300) return FunktionId.TændSlukLampe;
         return FunktionId.Fejl;
     }
 

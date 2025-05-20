@@ -35,9 +35,7 @@ using System.Device.I2c;
             Thread.Sleep(200);
         }
 
-        /// <summary>
-        /// Henter afstand i mm, eller null ved invalid (>8190) eller fejl
-        /// </summary>
+        // Henter afstand i mm, eller null ved invalid (>8190) eller fejl
         public int? GetDistance()
         {
             if (afstandsSensor == null)

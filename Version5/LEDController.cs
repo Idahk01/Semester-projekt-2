@@ -80,10 +80,7 @@ public class LEDController : IDisposable
         }
     }
 
-    /// <summary>
-    /// Tænder eller slukker LED 1.
-    /// </summary>
-    /// <param name="turnOn">True for at tænde LED'en, false for at slukke.</param>
+    // Tænder eller slukker LED 1.
     public void ControlLed1(bool turnOn)
     {
         if (_gpioController == null) return;
@@ -92,10 +89,7 @@ public class LEDController : IDisposable
         Console.WriteLine($"LED 1 {(turnOn ? "tændt" : "slukket")} (GPIO {Led1Pin})");
     }
 
-    /// <summary>
-    /// Tænder eller slukker LED 2.
-    /// </summary>
-    /// <param name="turnOn">True for at tænde LED'en, false for at slukke.</param>
+    // Tænder eller slukker LED 2.
     public void ControlLed2(bool turnOn)
     {
         if (_gpioController == null) return;
@@ -104,10 +98,7 @@ public class LEDController : IDisposable
         Console.WriteLine($"LED 2 {(turnOn ? "tændt" : "slukket")} (GPIO {Led2Pin})");
     }
 
-    /// <summary>
-    /// Tænder eller slukker LED 3.
-    /// </summary>
-    /// <param name="turnOn">True for at tænde LED'en, false for at slukke.</param>
+    // Tænder eller slukker LED 3.
     public void ControlLed3(bool turnOn)
     {
         if (_gpioController == null) return;
@@ -116,25 +107,19 @@ public class LEDController : IDisposable
         Console.WriteLine($"LED 3 {(turnOn ? "tændt" : "slukket")} (GPIO {Led3Pin})");
     }
 
-    /// <summary>
-    /// Toggler tilstanden for LED 1.
-    /// </summary>
+    // Toggler tilstanden for LED 1.
     public void ToggleLed1()
     {
         ControlLed1(!_isLed1On);
     }
 
-    /// <summary>
-    /// Toggler tilstanden for LED 2.
-    /// </summary>
+    // Toggler tilstanden for LED 2.
     public void ToggleLed2()
     {
         ControlLed2(!_isLed2On);
     }
 
-    /// <summary>
-    /// Toggler tilstanden for LED 3.
-    /// </summary>
+    // Toggler tilstanden for LED 3.
     public void ToggleLed3()
     {
         ControlLed3(!_isLed3On);
@@ -157,13 +142,14 @@ public class LEDController : IDisposable
         Console.WriteLine($"Status LED (GPIO {StatusLedPin}) tændt.");
     }
     
-    // Slukker Status LED.
+    // Sætter Status LED til inaktiv
     public void SetSystemInactive()
     {
         SetStatusLedBrightness(0.05);
         Console.WriteLine($"Status LED (GPIO {StatusLedPin}) sat til 5% (inaktiv tilstand).");
     }
 
+    // Slukker Status LED.
     public void TurnOffStatusLed()
     {
         SetStatusLedBrightness(0.0);

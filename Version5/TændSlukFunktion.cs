@@ -37,12 +37,12 @@ public class TændSlukFunktion
             case FunktionId.TændSlukLampe:
                 Console.WriteLine("\u001b[32mToggler lampe...\u001b[0m");
                 // Antag at du har en ToggleLamp() i HomeAssistant
-                _haController.ToggleLamp().GetAwaiter().GetResult();
+                _haController.ToggleLamp();
                 break;
 
             case FunktionId.TændSlukTV:
                 Console.WriteLine("\u001b[31mToggler TV...\u001b[0m");
-                _haController.ToggleTV().GetAwaiter().GetResult();
+                _haController.ToggleTV();
                 break;
 
             default:

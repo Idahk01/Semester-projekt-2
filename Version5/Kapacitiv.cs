@@ -15,9 +15,7 @@ public class Kapacitiv
         _gpio.OpenPin(_pin, PinMode.InputPullDown); // Brug pull-down for stabilitet
     }
 
-    /// <summary>
-    /// Returnerer true ved hver ny trykændring (HIGH→LOW eller LOW→HIGH)
-    /// </summary>
+    // Returnerer true ved hver ny trykændring (HIGH→LOW eller LOW→HIGH)
     public bool HasToggled()
     {
         bool currentState = _gpio.Read(_pin) == PinValue.High;

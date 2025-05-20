@@ -8,16 +8,14 @@ public class TændSlukSystem
     private readonly Kapacitiv _kapacitiv;
     private readonly LEDController _ledController;
     private readonly HomeAssistant _haController;
-    private readonly TændSlukFunktion _funktionHandler;
+    private readonly TændSlukFunktion _funktion;
 
     private bool _systemOn    = false;
     private bool _tiltActive  = false;
     private int  _currentZone = -1;
-    private const double TiltVinkelGrænse = 30.0;
-
-    /// <summary>
-    /// baseUrl fx "http://172.20.10.6:8123", bearerToken din long-lived token
-    /// </summary>
+    private const double tiltAngleThreshold = 30.0;
+    
+    // baseUrl fx "http://172.20.10.6:8123", bearerToken din long-lived token
     public TændSlukSystem(string baseUrl, string bearerToken)
     {
         Console.WriteLine("Initialiserer sensorer og HomeAssistant…");
@@ -26,7 +24,7 @@ public class TændSlukSystem
         _kapacitiv      = new Kapacitiv();
         _ledController  = new LEDController();
         _haController   = new HomeAssistant(baseUrl, bearerToken);
-        _funktionHandler = new TændSlukFunktion(_haController);
+        _funktion = new TændSlukFunktion(_haController);
 
         // Sluk alle zoner ved start
         _ledController.ControlLed1(false);
@@ -73,42 +71,46 @@ public class TændSlukSystem
 
     private void CheckForTilt()
     {
-        var vinkel   = _tilt.TiltAngle();
-        var afstand  = _afstand.GetDistance();
+        double? angle = _tilt.TiltAngle();
+        int? distance = _afstand.GetDistance();
+            
+        Console.WriteLine($"Distance: {(distance.HasValue ? distance.Value.ToString() : "FEJL/Ugyldig")} mm");
+        Console.WriteLine($"Angle:    {(angle.HasValue ? angle.Value.ToString("F1") : "FEJL")} °");
 
-        Console.WriteLine($"Distance: {(afstand.HasValue ? afstand.Value + " mm" : "FEJL")}");
-        Console.WriteLine($"Vinkel:   {(vinkel.HasValue  ? vinkel.Value.ToString("F1") + " °" : "FEJL")}");
+        LEDS(distance);
 
-        UpdateZoneLeds(afstand);
-
-        if (vinkel > TiltVinkelGrænse && !_tiltActive)
+        if (angle > tiltAngleThreshold && !_tiltActive)
         {
             _tiltActive = true;
-            if (afstand.HasValue)
+            if (distance.HasValue)
             {
-                var funktion = _funktionHandler.BeregnFunktion(afstand.Value);
-                _funktionHandler.UdførFunktion(funktion);
+                var funktion = _funktion.CalculateFunction(distance.Value);
+                _funktion.Execute(funktion);
             }
         }
-        else if (vinkel < TiltVinkelGrænse - 5.0)
+        else if (angle < tiltAngleThreshold - 5.0)
         {
             _tiltActive = false;
         }
     }
 
-    private void UpdateZoneLeds(int? afstand)
+    private void LEDS(int? distance)
     {
-        if (!afstand.HasValue) return;
+        if (!distance.HasValue) return;
 
-        int nyZone = afstand <= 150 ? 0
-                   : afstand <= 300 ? 1
+        int newZone = distance <= 150 ? 0
+                   : distance <= 300 ? 1
                    : 2;
+        // newZone får tildelt en værdi alt efter værdien på distance
 
-        if (nyZone == _currentZone) return;
-        _currentZone = nyZone;
+        if (newZone == _currentZone) return; // Sørger for kun at opdatere LEDs når hånden flytter sig til ny zone
+        _currentZone = newZone;
 
-        _ledController.ControlLed1(nyZone == 0);
-        _ledController.ControlLed2(nyZone == 1);
-        _ledController.ControlLed3(nyZone == 2);
+        // Opdatere LED udfra hvad newZone's værdi
+        _ledController.ControlLed1(newZone == 0);
+        _ledController.ControlLed2(newZone == 1);
+        _ledController.ControlLed3(newZone == 2);
+        
+        
     }
 }
